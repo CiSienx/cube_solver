@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,12 +30,13 @@ public class ContolCube : MonoBehaviour
     public Button Ui;
     public Button Di;
     public Button shuffle;
+    public Button solve;
 
     Quaternion angle;
     Quaternion fix;
     string move;
     string move_set = "";
-    string ans = "";
+    List<int> ans = new List<int>();
     bool detect;
     bool listn;
     List<GameObject> map;
@@ -70,7 +70,7 @@ public class ContolCube : MonoBehaviour
         Bi.onClick.AddListener(rotateBi);
         Di.onClick.AddListener(rotateDi);
         shuffle.onClick.AddListener(mixit);
-        print(mix);
+        solve.onClick.AddListener(solve_move);
     }
     void Update()
     {
@@ -100,8 +100,7 @@ public class ContolCube : MonoBehaviour
             {
                 top.transform.rotation = fix;
                 angle = fix;
-                move_set = move_set + move;
-                moves.GetComponent<Text>().text = ans;
+                move_text();
 
                 for (int i = 1; i < 27; i++)
                 {
@@ -115,21 +114,7 @@ public class ContolCube : MonoBehaviour
                     child.SetParent(holder.transform);
                 }
                 updatemap(up, left, front, right, back, bottom);
-                U.interactable = true;
-                L.interactable = true;
-                F.interactable = true;
-                R.interactable = true;
-                B.interactable = true;
-                D.interactable = true;
-                Ui.interactable = true;
-                Li.interactable = true;
-                Fi.interactable = true;
-                Ri.interactable = true;
-                Bi.interactable = true;
-                Di.interactable = true;
-                shuffle.interactable = true;
-                detect = true;
-                listn = true;
+                detector(true);
             }
         }
         else if (mix.Count > 0)
@@ -185,6 +170,8 @@ public class ContolCube : MonoBehaviour
             {
                 rotateDi();
             }
+            print(mix.Count);
+            print(ans.Count);
             mix.RemoveAt(0);
         }
         else if (mix.Count == 0)
@@ -196,21 +183,7 @@ public class ContolCube : MonoBehaviour
     void rotateU()
     {
         move = "U";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        detector(false);
         map = read();
         for (int i = 0; i < 9; i++)
         {
@@ -219,24 +192,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(0, 90, 0);
     }
-    void rotateL()
+    void rotateB()
     {
-        move = "L";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "B";
+        detector(false);
         map =  read();
         for (int i = 9; i < 18; i++)
         {
@@ -245,24 +204,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(0, 0, 90);
     }
-    void rotateF()
+    void rotateL()
     {
-        move = "F";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "L";
+        detector(false);
         map = read();
         for (int i =18; i < 27; i++)
         {
@@ -271,24 +216,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(90, 0, 0);
     }
-    void rotateR()
+    void rotateF()
     {
-        move = "R";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "F";
+        detector(false);
         map = read();
         for (int i = 27; i < 36; i++)
         {
@@ -297,24 +228,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(0, 0, 90);
     }
-    void rotateB()
+    void rotateR()
     {
-        move = "B";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "R";
+        detector(false);
         map = read();
         for (int i = 36; i < 45; i++)
         {
@@ -326,21 +243,7 @@ public class ContolCube : MonoBehaviour
     void rotateD()
     {
         move = "D";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        detector(false);
         map = read();
         for (int i = 45; i < 54; i++)
         {
@@ -352,21 +255,7 @@ public class ContolCube : MonoBehaviour
     void rotateUi()
     {
         move = "Ui";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        detector(false);
         map = read();
         for (int i = 0; i < 9; i++)
         {
@@ -375,24 +264,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(0, -90, 0);
     }
-    void rotateLi()
+    void rotateBi()
     {
-        move = "Li";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "Bi";
+        detector(false);
         map = read();
         for (int i = 9; i < 18; i++)
         {
@@ -401,24 +276,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(0, 0, -90);
     }
-    void rotateFi()
+    void rotateLi()
     {
-        move = "Fi";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "Li";
+        detector(false);
         map = read();
         for (int i = 18; i < 27; i++)
         {
@@ -427,24 +288,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(-90, 0, 0);
     }
-    void rotateRi()
+    void rotateFi()
     {
-        move = "Ri";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "Fi";
+        detector(false);
         map = read();
         for (int i = 27; i < 36; i++)
         {
@@ -453,24 +300,10 @@ public class ContolCube : MonoBehaviour
         }
         angle = top.transform.rotation * Quaternion.Euler(0, 0, -90);
     }
-    void rotateBi()
+    void rotateRi()
     {
-        move = "Bi";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        move = "Ri";
+        detector(false);
         map = read();
         for (int i = 36; i < 45; i++)
         {
@@ -482,21 +315,7 @@ public class ContolCube : MonoBehaviour
     void rotateDi()
     {
         move = "Di";
-        U.interactable = false;
-        L.interactable = false;
-        F.interactable = false;
-        R.interactable = false;
-        B.interactable = false;
-        D.interactable = false;
-        Ui.interactable = false;
-        Li.interactable = false;
-        Fi.interactable = false;
-        Ri.interactable = false;
-        Bi.interactable = false;
-        Di.interactable = false;
-        shuffle.interactable = false;
-        detect = false;
-        listn = false;
+        detector(false);
         map = read();
         for (int i = 45; i < 54; i++)
         {
@@ -530,20 +349,7 @@ public class ContolCube : MonoBehaviour
                 child.SetParent(holder.transform);
             }
             updatemap(up, left, front, right, back, bottom);
-            detect = true;
-            U.interactable = true;
-            L.interactable = true;
-            F.interactable = true;
-            R.interactable = true;
-            B.interactable = true;
-            D.interactable = true;
-            Ui.interactable = true;
-            Li.interactable = true;
-            Fi.interactable = true;
-            Ri.interactable = true;
-            Bi.interactable = true;
-            Di.interactable = true;
-            shuffle.interactable = true;
+            detector(true);
         }
     }
     void Swipe()
@@ -577,6 +383,7 @@ public class ContolCube : MonoBehaviour
                         Bi.interactable = false;
                         Di.interactable = false;
                         shuffle.interactable = false;
+                        solve.interactable = false;
                         target = holder.transform.rotation * Quaternion.Euler(0, 90, 0);
                     }
                     else if (RightSwipe(CurrentSwipe))
@@ -594,6 +401,7 @@ public class ContolCube : MonoBehaviour
                         Bi.interactable = false;
                         Di.interactable = false;
                         shuffle.interactable = false;
+                        solve.interactable = false;
                         target = holder.transform.rotation * Quaternion.Euler(0, -90, 0);
                     }
                     else if (UpRightSwipe(CurrentSwipe))
@@ -611,6 +419,7 @@ public class ContolCube : MonoBehaviour
                         Bi.interactable = false;
                         Di.interactable = false;
                         shuffle.interactable = false;
+                        solve.interactable = false;
                         target = holder.transform.rotation * Quaternion.Euler(-90, 0, 0);
                     }
                     else if (UpLeftSwipe(CurrentSwipe))
@@ -628,6 +437,7 @@ public class ContolCube : MonoBehaviour
                         Bi.interactable = false;
                         Di.interactable = false;
                         shuffle.interactable = false;
+                        solve.interactable = false;
                         target = holder.transform.rotation * Quaternion.Euler(0, 0, 90);
                     }
                     else if (DownRightSwipe(CurrentSwipe))
@@ -645,6 +455,7 @@ public class ContolCube : MonoBehaviour
                         Bi.interactable = false;
                         Di.interactable = false;
                         shuffle.interactable = false;
+                        solve.interactable = false;
                         target = holder.transform.rotation * Quaternion.Euler(90, 0, 0);
                     }
                     else if (DownLeftSwipe(CurrentSwipe))
@@ -662,6 +473,7 @@ public class ContolCube : MonoBehaviour
                         Bi.interactable = false;
                         Di.interactable = false;
                         shuffle.interactable = false;
+                        solve.interactable = false;
                         target = holder.transform.rotation * Quaternion.Euler(0, 0, -90);
                     }
                     else if (NoSwipe(CurrentSwipe))
@@ -1025,5 +837,130 @@ public class ContolCube : MonoBehaviour
             }
             i++;
         }
+    }
+    void move_text()
+    {
+        string anti_move = "";
+        if (move.Length == 1)
+        {
+            anti_move = move + "i";
+        }
+        else if (move.Length == 2)
+        {
+            anti_move = move.Remove(1);
+        }
+        if (move_set != "")
+        {
+            if (move_set.Substring(move_set.Length - 1) == "i")
+            {
+                if (move_set.Substring(move_set.Length - 2) == anti_move)
+                {
+                    move_set = move_set.Remove(move_set.Length - 1);
+                    move_set = move_set.Remove(move_set.Length - 1);
+                    ans.RemoveAt(0);
+                }
+                else
+                {
+                    move_set += move;
+                    solution();
+                }
+            }
+            else
+            {
+                if (move_set.Substring(move_set.Length - 1) == anti_move)
+                {
+                    move_set = move_set.Remove(move_set.Length - 1);
+                    ans.RemoveAt(0);
+                }
+                else
+                {
+                    move_set += move;
+                    solution();
+                }
+            }
+        }
+        else
+        {
+            move_set += move;
+            solution();
+        }
+        moves.GetComponent<Text>().text = move_set;
+    }
+    void solve_move()
+    {
+        foreach (int n in ans)
+        {
+            mix.Add(n);
+        }
+    }
+    void solution()
+    {
+        if (move == "Ui")
+        {
+            ans.Insert(0, 1);
+        }
+        else if (move == "Li")
+        {
+            ans.Insert(0, 2);
+        }
+        else if (move == "Fi")
+        {
+            ans.Insert(0, 3);
+        }
+        else if (move == "Ri")
+        {
+            ans.Insert(0, 4);
+        }
+        else if (move == "Bi")
+        {
+            ans.Insert(0, 5);
+        }
+        else if (move == "Di")
+        {
+            ans.Insert(0, 6);
+        }
+        else if (move == "U")
+        {
+            ans.Insert(0, 7);
+        }
+        else if (move == "L")
+        {
+            ans.Insert(0, 8);
+        }
+        else if (move == "F")
+        {
+            ans.Insert(0, 9);
+        }
+        else if (move == "R")
+        {
+            ans.Insert(0, 10);
+        }
+        else if (move == "B")
+        {
+            ans.Insert(0, 11);
+        }
+        else if (move == "D")
+        {
+            ans.Insert(0, 12);
+        }
+    }
+    void detector(bool dect)
+    {
+        U.interactable = dect;
+        L.interactable = dect;
+        F.interactable = dect;
+        R.interactable = dect;
+        B.interactable = dect;
+        D.interactable = dect;
+        Ui.interactable = dect;
+        Li.interactable = dect;
+        Fi.interactable = dect;
+        Ri.interactable = dect;
+        Bi.interactable = dect;
+        Di.interactable = dect;
+        shuffle.interactable = dect;
+        solve.interactable = dect;
+        detect = dect;
+        listn = dect;
     }
 }
